@@ -50,8 +50,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
       } else {
         setError(result.error?.message || 'An error occurred');
       }
-    } catch (err: any) {
-      setError(err.message || 'An error occurred');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

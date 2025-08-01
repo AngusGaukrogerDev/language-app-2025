@@ -15,13 +15,16 @@ export const AppwriteTest = () => {
       // Test basic connection
       const result = await account.get();
       setTestResult(`✅ Connection successful! User: ${result.name || result.email}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Handle expected authentication failures gracefully
-      if (error.code === 401 || error.message?.includes('missing scope')) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 401) {
+        setTestResult('ℹ️ Connection working - User not authenticated (this is normal)');
+      } else if (error instanceof Error && error.message?.includes('missing scope')) {
         setTestResult('ℹ️ Connection working - User not authenticated (this is normal)');
       } else {
         console.error('Connection test error:', error);
-        setTestResult(`❌ Connection failed: ${error.message}`);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        setTestResult(`❌ Connection failed: ${errorMessage}`);
       }
     } finally {
       setLoading(false);

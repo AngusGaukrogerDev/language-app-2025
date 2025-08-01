@@ -10,7 +10,7 @@ export async function GET() {
     } else {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 } 

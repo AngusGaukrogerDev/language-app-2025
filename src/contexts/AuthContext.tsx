@@ -41,9 +41,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Not authenticated is not an error, just set user to null
         setUser(null);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Only set error for actual errors, not for expected "not authenticated" responses
-      if (!error.message?.includes('Not authenticated')) {
+      if (error instanceof Error && !error.message?.includes('Not authenticated')) {
         console.error('Error checking user:', error);
         setError(error.message || 'Failed to check authentication status');
       }
@@ -58,11 +58,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(null);
       await logout();
       setUser(null);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Logout error:', error);
       // Even if logout fails, clear the user state
       setUser(null);
-      setError(error.message || 'Failed to logout');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to logout';
+      setError(errorMessage);
     }
   };
 
