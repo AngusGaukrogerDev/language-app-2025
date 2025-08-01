@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Grammar Lab
+
+A modern grammar learning platform built with Next.js and Appwrite.
+
+## Features
+
+- 🔐 User authentication (login/signup)
+- 📊 Dashboard with learning statistics
+- 🎨 Clean monochrome design
+- ⚡ Fast and responsive UI
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ 
+- Appwrite account and project
+
+### Environment Setup
+
+1. Create a `.env.local` file in the root directory with your Appwrite credentials:
+
+```env
+NEXT_PUBLIC_APPWRITE_URL=your_appwrite_endpoint
+NEXT_PUBLIC_APPWRITE_PROJECT_ID=your_project_id
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Appwrite Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Create a new Appwrite project
+2. Enable authentication in your Appwrite console
+3. Add your project URL and ID to the environment variables
+4. The app will automatically handle user registration and authentication
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/                 # Next.js app router pages
+│   ├── api/            # API routes
+│   ├── dashboard/      # Dashboard page
+│   ├── login/          # Login page
+│   └── signup/         # Signup page
+├── components/         # Reusable components
+├── contexts/          # React contexts
+└── utils/             # Utility functions (Appwrite config)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Testing the Application
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Visit the homepage - you'll see the Grammar Lab landing page
+2. Click "Create Account" to sign up with a new user
+3. Or click "Sign In" if you already have an account
+4. After authentication, you'll be redirected to the dashboard
+5. Use the logout button in the navigation to sign out
 
-## Deploy on Vercel
+## Next Steps
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Add grammar lessons and exercises
+- Implement progress tracking
+- Add user profile management
+- Create interactive learning modules
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Technologies Used
+
+- **Next.js 14** - React framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **Appwrite** - Backend and authentication
+- **React Context** - State management
