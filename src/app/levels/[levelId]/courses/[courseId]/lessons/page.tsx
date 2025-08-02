@@ -3,36 +3,31 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { getCourses } from '@/utils/appwrite';
-import CoursesGrid from '@/components/CoursesGrid';
+import { getLessons } from '@/utils/appwrite';
+import LessonsGrid from '@/components/LessonsGrid';
 
-interface Course {
+interface Lesson {
   $id: string;
   title: string;
   description?: string;
   isActive: boolean;
-  grammarType?: {
+  course?: {
     $id: string;
-    name: string;
-    slug: string;
-    description?: string;
-  };
-  level?: {
-    $id: string;
-    code: string;
+    title: string;
   };
 }
 
-export default function CoursesPage() {
+export default function LessonsPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const params = useParams();
   const levelId = params.levelId as string;
+  const courseId = params.courseId as string;
   
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [coursesLoading, setCoursesLoading] = useState(true);
+  const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [lessonsLoading, setLessonsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [levelCode, setLevelCode] = useState<string>('');
+  const [courseTitle, setCourseTitle] = useState<string>('');
 
   useEffect(() => {
     if (!loading && !user) {
@@ -41,37 +36,37 @@ export default function CoursesPage() {
   }, [user, loading, router]);
 
   useEffect(() => {
-    const fetchCourses = async () => {
-      if (!user || !levelId) return;
+    const fetchLessons = async () => {
+      if (!user || !courseId) return;
       
       try {
-        setCoursesLoading(true);
+        setLessonsLoading(true);
         setError(null);
-        const result = await getCourses(levelId);
+        const result = await getLessons(courseId);
         
         if (result.success && result.data) {
-          const coursesData = result.data as unknown as Course[];
-          setCourses(coursesData);
-          // Set level code from the first course if available
-          if (coursesData.length > 0 && coursesData[0].level) {
-            setLevelCode(coursesData[0].level.code);
+          const lessonsData = result.data as unknown as Lesson[];
+          setLessons(lessonsData);
+          // Set course title from the first lesson if available
+          if (lessonsData.length > 0 && lessonsData[0].course) {
+            setCourseTitle(lessonsData[0].course.title);
           }
         } else {
-          setError(result.error?.message || 'Failed to load courses');
+          setError(result.error?.message || 'Failed to load lessons');
         }
       } catch (err) {
         setError('An unexpected error occurred');
-        console.error('Error fetching courses:', err);
+        console.error('Error fetching lessons:', err);
       } finally {
-        setCoursesLoading(false);
+        setLessonsLoading(false);
       }
     };
 
-    fetchCourses();
-  }, [user, levelId]);
+    fetchLessons();
+  }, [user, courseId]);
 
-  const handleCourseSelect = (courseId: string) => {
-    router.push(`/levels/${levelId}/courses/${courseId}/lessons`);
+  const handleLessonSelect = (lessonId: string) => {
+    router.push(`/levels/${levelId}/courses/${courseId}/lessons/${lessonId}`);
   };
 
   const handleRetry = () => {
@@ -98,37 +93,37 @@ export default function CoursesPage() {
           <div className="mb-6 sm:mb-8 lg:mb-10">
             <div className="flex items-center gap-2 mb-2">
               <button 
-                onClick={() => router.push('/levels')}
+                onClick={() => router.push(`/levels/${levelId}/courses`)}
                 className="text-gray-600 hover:text-gray-900 transition-colors"
               >
                 <span className="text-lg">←</span>
               </button>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
-                {levelCode ? `Level ${levelCode.toUpperCase()} Courses` : 'Courses'}
+                {courseTitle ? `${courseTitle} Lessons` : 'Lessons'}
               </h1>
             </div>
             <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl ml-8">
-              Choose a course to start learning grammar concepts
+              Choose a lesson to start learning
             </p>
           </div>
 
-          {/* Courses Grid */}
-          <CoursesGrid
-            courses={courses}
-            loading={coursesLoading}
+          {/* Lessons Grid */}
+          <LessonsGrid
+            lessons={lessons}
+            loading={lessonsLoading}
             error={error}
-            onCourseSelect={handleCourseSelect}
+            onLessonSelect={handleLessonSelect}
             onRetry={handleRetry}
           />
 
-          {/* Back to Levels */}
+          {/* Back to Courses */}
           <div className="mt-8 sm:mt-12 lg:mt-16">
             <button 
-              onClick={() => router.push('/levels')}
+              onClick={() => router.push(`/levels/${levelId}/courses`)}
               className="text-gray-600 hover:text-gray-900 font-medium flex items-center gap-2 transition-colors text-sm sm:text-base"
             >
               <span className="text-lg">←</span>
-              Back to Levels
+              Back to Courses
             </button>
           </div>
         </div>

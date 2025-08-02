@@ -1,41 +1,35 @@
-import CourseCard from './CourseCard';
+import LessonCard from './LessonCard';
 
-interface Course {
+interface Lesson {
   $id: string;
   title: string;
   description?: string;
   isActive: boolean;
-  grammarType?: {
+  course?: {
     $id: string;
-    name: string;
-    slug: string;
-    description?: string;
-  };
-  level?: {
-    $id: string;
-    code: string;
+    title: string;
   };
 }
 
-interface CoursesGridProps {
-  courses: Course[];
+interface LessonsGridProps {
+  lessons: Lesson[];
   loading: boolean;
   error: string | null;
-  onCourseSelect: (courseId: string) => void;
+  onLessonSelect?: (lessonId: string) => void;
   onRetry: () => void;
 }
 
-export default function CoursesGrid({ 
-  courses, 
+export default function LessonsGrid({ 
+  lessons, 
   loading, 
   error, 
-  onCourseSelect, 
+  onLessonSelect, 
   onRetry 
-}: CoursesGridProps) {
+}: LessonsGridProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-gray-900 text-lg">Loading courses...</div>
+        <div className="text-gray-900 text-lg">Loading lessons...</div>
       </div>
     );
   }
@@ -55,12 +49,12 @@ export default function CoursesGrid({
     );
   }
 
-  if (courses.length === 0) {
+  if (lessons.length === 0) {
     return (
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6 text-center">
-        <h3 className="text-lg font-semibold text-blue-800 mb-2">No Courses Available</h3>
+        <h3 className="text-lg font-semibold text-blue-800 mb-2">No Lessons Available</h3>
         <p className="text-blue-700">
-          No active courses have been set up for this level yet. Please check back later.
+          No active lessons have been set up for this course yet. Please check back later.
         </p>
       </div>
     );
@@ -68,14 +62,14 @@ export default function CoursesGrid({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-      {courses.map((course) => (
-        <CourseCard
-          key={course.$id}
-          id={course.$id}
-          title={course.title}
-          description={course.description}
-          grammarType={course.grammarType}
-          onSelect={onCourseSelect}
+      {lessons.map((lesson) => (
+        <LessonCard
+          key={lesson.$id}
+          id={lesson.$id}
+          title={lesson.title}
+          description={lesson.description}
+          progress={0} // Set to 0% as requested
+          onSelect={onLessonSelect}
         />
       ))}
     </div>
