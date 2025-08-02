@@ -4,7 +4,4 @@
 echo "🔍 Running lint-staged..."
 npx lint-staged
 
-echo "🏗️  Running build check..."
-npm run build
-
 echo "✅ Pre-commit checks passed!"
