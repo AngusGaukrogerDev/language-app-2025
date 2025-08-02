@@ -1,24 +1,22 @@
-interface CourseCardProps {
+interface LessonCardProps {
   id: string;
   title: string;
   description?: string;
-  grammarType?: {
-    name: string;
-    slug: string;
-    description?: string;
-  };
-  onSelect: (courseId: string) => void;
+  progress?: number; // Progress percentage (0-100)
+  onSelect?: (lessonId: string) => void;
 }
 
-export default function CourseCard({ 
+export default function LessonCard({ 
   id, 
   title, 
   description, 
-  grammarType, 
+  progress = 0,
   onSelect 
-}: CourseCardProps) {
+}: LessonCardProps) {
   const handleClick = () => {
-    onSelect(id);
+    if (onSelect) {
+      onSelect(id);
+    }
   };
 
   return (
@@ -27,21 +25,12 @@ export default function CourseCard({
       onClick={handleClick}
     >
       <div className="flex flex-col h-full">
-        {/* Grammar Type Badge */}
-        {grammarType && (
-          <div className="mb-3">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-              {grammarType.name}
-            </span>
-          </div>
-        )}
-        
-        {/* Course Title */}
+        {/* Lesson Title */}
         <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 group-hover:text-gray-700 transition-colors">
           {title}
         </h3>
         
-        {/* Course Description */}
+        {/* Lesson Description */}
         {description && (
           <p className="text-sm text-gray-600 mb-4 flex-grow overflow-hidden" style={{
             display: '-webkit-box',
@@ -52,20 +41,23 @@ export default function CourseCard({
           </p>
         )}
         
-        {/* Grammar Type Description */}
-        {grammarType?.description && !description && (
-          <p className="text-sm text-gray-600 mb-4 flex-grow overflow-hidden" style={{
-            display: '-webkit-box',
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: 'vertical'
-          }}>
-            {grammarType.description}
-          </p>
-        )}
+        {/* Progress Bar */}
+        <div className="mb-4">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium text-gray-700">Progress</span>
+            <span className="text-sm text-gray-600">{Math.round(progress)}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div 
+              className="bg-blue-600 h-2.5 rounded-full transition-all duration-300" 
+              style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+            ></div>
+          </div>
+        </div>
         
-        {/* Start Button */}
+        {/* Start/Continue Button */}
         <button className="w-full bg-gray-900 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors group-hover:bg-gray-800 mt-auto">
-          Start Course
+          {progress > 0 ? 'Continue Lesson' : 'Start Lesson'}
         </button>
       </div>
     </div>

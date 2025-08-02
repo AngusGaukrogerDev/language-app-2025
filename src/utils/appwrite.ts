@@ -133,6 +133,7 @@ export const updateName = async (name: string) => {
 const DATABASE_ID = 'language-app';
 const LEVELS_COLLECTION_ID = 'levels';
 const COURSES_COLLECTION_ID = 'courses';
+const LESSONS_COLLECTION_ID = 'lessons';
 
 // Fetch all levels from the database
 export const getLevels = async () => {
@@ -161,6 +162,41 @@ export const getCourses = async (levelId: string) => {
     } catch (error: unknown) {
         console.error('Get courses error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Failed to fetch courses';
+        return { success: false, error: { message: errorMessage } };
+    }
+};
+
+// Fetch lessons for a specific course
+export const getLessons = async (courseId: string) => {
+    try {
+        const result = await getDatabases().listDocuments(
+            DATABASE_ID, 
+            LESSONS_COLLECTION_ID,
+            [
+                Query.equal('course', courseId),
+                Query.equal('isActive', true)
+            ]
+        );
+        return { success: true, data: result.documents as Models.Document[] };
+    } catch (error: unknown) {
+        console.error('Get lessons error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch lessons';
+        return { success: false, error: { message: errorMessage } };
+    }
+};
+
+// Fetch a single lesson by ID
+export const getLesson = async (lessonId: string) => {
+    try {
+        const result = await getDatabases().getDocument(
+            DATABASE_ID, 
+            LESSONS_COLLECTION_ID,
+            lessonId
+        );
+        return { success: true, data: result as Models.Document };
+    } catch (error: unknown) {
+        console.error('Get lesson error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch lesson';
         return { success: false, error: { message: errorMessage } };
     }
 };
