@@ -1,4 +1,4 @@
-import { Client, Account, Databases, Storage } from 'appwrite';
+import { Client, Account, Databases, Storage, Query } from 'appwrite';
 
 // Lazy initialization to avoid build-time errors
 let client: Client | null = null;
@@ -125,6 +125,42 @@ export const updateName = async (name: string) => {
     } catch (error: unknown) {
         console.error('Name update error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Name update failed';
+        return { success: false, error: { message: errorMessage } };
+    }
+};
+
+// Database configurations
+const DATABASE_ID = 'language-app';
+const LEVELS_COLLECTION_ID = 'levels';
+const COURSES_COLLECTION_ID = 'courses';
+
+// Fetch all levels from the database
+export const getLevels = async () => {
+    try {
+        const result = await getDatabases().listDocuments(DATABASE_ID, LEVELS_COLLECTION_ID);
+        return { success: true, data: result.documents };
+    } catch (error: unknown) {
+        console.error('Get levels error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch levels';
+        return { success: false, error: { message: errorMessage } };
+    }
+};
+
+// Fetch courses for a specific level
+export const getCourses = async (levelId: string) => {
+    try {
+        const result = await getDatabases().listDocuments(
+            DATABASE_ID, 
+            COURSES_COLLECTION_ID,
+            [
+                Query.equal('level', levelId),
+                Query.equal('isActive', true)
+            ]
+        );
+        return { success: true, data: result.documents };
+    } catch (error: unknown) {
+        console.error('Get courses error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch courses';
         return { success: false, error: { message: errorMessage } };
     }
 };
