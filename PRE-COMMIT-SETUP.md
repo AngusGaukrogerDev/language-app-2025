@@ -1,6 +1,6 @@
 # Pre-commit Hook Setup
 
-This setup ensures that no commits can be made without first running `npm run build` and getting no linting errors.
+This setup ensures that no commits can be made without first passing linting checks on staged files.
 
 ## Installation Steps
 
