@@ -13,7 +13,7 @@ export const AppwriteTest = () => {
     
     try {
       // Test basic connection
-      const result = await account.get();
+      const result = await account().get();
       setTestResult(`✅ Connection successful! User: ${result.name || result.email}`);
     } catch (error: unknown) {
       // Handle expected authentication failures gracefully

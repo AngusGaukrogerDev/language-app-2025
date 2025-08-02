@@ -31,9 +31,6 @@ jobs:
 
       - name: Build project
         run: npm run build
-        env:
-          NEXT_PUBLIC_APPWRITE_URL: ${{ secrets.NEXT_PUBLIC_APPWRITE_URL }}
-          NEXT_PUBLIC_APPWRITE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_APPWRITE_PROJECT_ID }}
 
       # Uncomment when you add tests to your project
       # - name: Run tests
