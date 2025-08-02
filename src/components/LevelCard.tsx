@@ -3,7 +3,6 @@ import { useRouter } from 'next/navigation';
 interface LevelCardProps {
   id: string;
   code: string;
-  onSelect?: (levelId: string, levelCode: string) => void;
 }
 
 export default function LevelCard({ id, code }: LevelCardProps) {

@@ -1,4 +1,4 @@
-import { Client, Account, Databases, Storage, Query } from 'appwrite';
+import { Client, Account, Databases, Storage, Query, Models } from 'appwrite';
 
 // Lazy initialization to avoid build-time errors
 let client: Client | null = null;
@@ -138,7 +138,7 @@ const COURSES_COLLECTION_ID = 'courses';
 export const getLevels = async () => {
     try {
         const result = await getDatabases().listDocuments(DATABASE_ID, LEVELS_COLLECTION_ID);
-        return { success: true, data: result.documents };
+        return { success: true, data: result.documents as Models.Document[] };
     } catch (error: unknown) {
         console.error('Get levels error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Failed to fetch levels';
@@ -157,7 +157,7 @@ export const getCourses = async (levelId: string) => {
                 Query.equal('isActive', true)
             ]
         );
-        return { success: true, data: result.documents };
+        return { success: true, data: result.documents as Models.Document[] };
     } catch (error: unknown) {
         console.error('Get courses error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Failed to fetch courses';

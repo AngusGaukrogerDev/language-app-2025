@@ -32,8 +32,8 @@ export default function LevelsPage() {
         setLevelsLoading(true);
         const result = await getLevels();
         
-        if (result.success) {
-          setLevels(result.data);
+        if (result.success && result.data) {
+          setLevels(result.data as unknown as Level[]);
         } else {
           setError(result.error?.message || 'Failed to load levels');
         }
@@ -83,7 +83,6 @@ export default function LevelsPage() {
             levels={levels}
             loading={levelsLoading}
             error={error}
-            onLevelSelect={() => {}} // Not used since LevelCard handles navigation directly
             onRetry={handleRetry}
           />
 

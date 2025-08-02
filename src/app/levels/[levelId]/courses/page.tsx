@@ -49,11 +49,12 @@ export default function CoursesPage() {
         setError(null);
         const result = await getCourses(levelId);
         
-        if (result.success) {
-          setCourses(result.data);
+        if (result.success && result.data) {
+          const coursesData = result.data as unknown as Course[];
+          setCourses(coursesData);
           // Set level code from the first course if available
-          if (result.data.length > 0 && result.data[0].level) {
-            setLevelCode(result.data[0].level.code);
+          if (coursesData.length > 0 && coursesData[0].level) {
+            setLevelCode(coursesData[0].level.code);
           }
         } else {
           setError(result.error?.message || 'Failed to load courses');

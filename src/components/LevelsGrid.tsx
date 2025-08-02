@@ -9,7 +9,6 @@ interface LevelsGridProps {
   levels: Level[];
   loading: boolean;
   error: string | null;
-  onLevelSelect: (levelId: string, levelCode: string) => void;
   onRetry: () => void;
 }
 
@@ -17,7 +16,6 @@ export default function LevelsGrid({
   levels, 
   loading, 
   error, 
-  onLevelSelect, 
   onRetry 
 }: LevelsGridProps) {
   if (loading) {
@@ -61,7 +59,6 @@ export default function LevelsGrid({
           key={level.$id}
           id={level.$id}
           code={level.code}
-          onSelect={onLevelSelect}
         />
       ))}
     </div>
