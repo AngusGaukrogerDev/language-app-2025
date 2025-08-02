@@ -10,11 +10,6 @@ if (!APPWRITE_URL || !APPWRITE_PROJECT_ID) {
   );
 }
 
-console.log('Appwrite Configuration:', {
-  url: APPWRITE_URL,
-  projectId: APPWRITE_PROJECT_ID
-});
-
 const client = new Client()
     .setEndpoint(APPWRITE_URL)
     .setProject(APPWRITE_PROJECT_ID);
@@ -81,8 +76,6 @@ export const getCurrentUser = async () => {
         if (error instanceof Error && error.message?.includes('missing scope')) {
             return { success: false, error: { message: 'Not authenticated' } };
         }
-        // Only log actual errors, not expected auth failures
-        console.error('Get current user error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Failed to get user';
         return { success: false, error: { message: errorMessage } };
     }
