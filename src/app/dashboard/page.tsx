@@ -68,7 +68,10 @@ export default function DashboardPage() {
               </div>
               
               <div className="mt-6 sm:mt-8">
-                <button className="bg-gray-900 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-md text-base sm:text-lg font-medium hover:bg-gray-800 transition-colors min-h-[44px]">
+                <button 
+                  onClick={() => router.push('/levels')}
+                  className="bg-gray-900 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-md text-base sm:text-lg font-medium hover:bg-gray-800 transition-colors min-h-[44px]"
+                >
                   Start Learning
                 </button>
               </div>
