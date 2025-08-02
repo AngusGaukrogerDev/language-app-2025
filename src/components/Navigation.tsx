@@ -2,11 +2,31 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { isUserAdmin } from '@/utils/appwrite';
 
 export const Navigation = () => {
   const { user, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      checkAdminStatus();
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user]);
+
+  const checkAdminStatus = async () => {
+    try {
+      const adminStatus = await isUserAdmin();
+      setIsAdmin(adminStatus);
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      setIsAdmin(false);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -25,10 +45,28 @@ export const Navigation = () => {
     <nav className="bg-black border-b border-gray-800 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center min-w-0">
-            <Link href={user ? "/dashboard" : "/"} className="flex items-center">
+          <div className="flex items-center space-x-4 min-w-0">
+            <Link href={user ? (isAdmin ? "/admin" : "/dashboard") : "/"} className="flex items-center">
               <h1 className="text-lg sm:text-xl font-bold text-white truncate">Grammar Lab</h1>
             </Link>
+            
+            {/* Admin links - only show when user is admin */}
+            {user && isAdmin && (
+              <div className="hidden md:flex items-center space-x-4">
+                <Link 
+                  href="/admin" 
+                  className="text-sm text-gray-300 hover:text-white transition-colors"
+                >
+                  Admin
+                </Link>
+                <Link 
+                  href="/dashboard?view=student" 
+                  className="text-sm text-gray-300 hover:text-white transition-colors"
+                >
+                  Student View
+                </Link>
+              </div>
+            )}
           </div>
           
           {/* Only show user options when signed in */}
@@ -88,7 +126,32 @@ export const Navigation = () => {
                         <p className="text-sm font-medium text-gray-900 truncate">
                           {user?.name || user?.email}
                         </p>
+                        {isAdmin && (
+                          <p className="text-xs text-blue-600 font-medium">Admin</p>
+                        )}
                       </div>
+                      
+                      {/* Admin links in mobile dropdown */}
+                      {isAdmin && (
+                        <>
+                          <Link
+                            href="/admin"
+                            onClick={closeDropdown}
+                            className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          >
+                            Admin Dashboard
+                          </Link>
+                          <Link
+                            href="/dashboard?view=student"
+                            onClick={closeDropdown}
+                            className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          >
+                            Student View
+                          </Link>
+                          <div className="border-t border-gray-100"></div>
+                        </>
+                      )}
+                      
                       <button
                         onClick={handleLogout}
                         className="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
