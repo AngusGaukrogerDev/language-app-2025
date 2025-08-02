@@ -23,8 +23,7 @@ This setup ensures that no commits can be made without first passing linting che
 
 ### Pre-commit Hook (`.husky/pre-commit`)
 - Runs `lint-staged` on staged files to fix linting issues automatically
-- Runs `npm run build` to ensure the project builds successfully
-- If either step fails, the commit is blocked
+- If linting fails, the commit is blocked
 
 ### Lint-staged Configuration (`package.json`)
 - Automatically runs ESLint with `--fix` on staged JavaScript/TypeScript files
