@@ -1,26 +1,52 @@
 import { Client, Account, Databases, Storage } from 'appwrite';
 
-// Validate environment variables
-const APPWRITE_URL = process.env.NEXT_PUBLIC_APPWRITE_URL;
-const APPWRITE_PROJECT_ID = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
+// Lazy initialization to avoid build-time errors
+let client: Client | null = null;
+let account: Account | null = null;
+let databases: Databases | null = null;
+let storage: Storage | null = null;
 
-if (!APPWRITE_URL || !APPWRITE_PROJECT_ID) {
-  throw new Error(
-    'Missing Appwrite environment variables. Please set NEXT_PUBLIC_APPWRITE_URL and NEXT_PUBLIC_APPWRITE_PROJECT_ID in your .env.local file.'
-  );
-}
+const initializeAppwrite = () => {
+  if (client) return; // Already initialized
 
-const client = new Client()
+  const APPWRITE_URL = process.env.NEXT_PUBLIC_APPWRITE_URL;
+  const APPWRITE_PROJECT_ID = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
+
+  if (!APPWRITE_URL || !APPWRITE_PROJECT_ID) {
+    throw new Error(
+      'Missing Appwrite environment variables. Please set NEXT_PUBLIC_APPWRITE_URL and NEXT_PUBLIC_APPWRITE_PROJECT_ID in your .env.local file.'
+    );
+  }
+
+  client = new Client()
     .setEndpoint(APPWRITE_URL)
     .setProject(APPWRITE_PROJECT_ID);
 
-export const account = new Account(client);
-export const databases = new Databases(client);
-export const storage = new Storage(client);
+  account = new Account(client);
+  databases = new Databases(client);
+  storage = new Storage(client);
+};
+
+const getAccount = () => {
+  initializeAppwrite();
+  return account!;
+};
+
+const getDatabases = () => {
+  initializeAppwrite();
+  return databases!;
+};
+
+const getStorage = () => {
+  initializeAppwrite();
+  return storage!;
+};
+
+export { getAccount as account, getDatabases as databases, getStorage as storage };
 
 export const loginWithEmail = async (email: string, password: string) => {
     try {
-        const session = await account.createEmailPasswordSession(email, password);
+        const session = await getAccount().createEmailPasswordSession(email, password);
         return { success: true, data: session };
     } catch (error: unknown) {
         console.error('Login error:', error);
@@ -35,7 +61,7 @@ export const loginWithEmail = async (email: string, password: string) => {
 
 export const signupWithEmail = async (email: string, password: string, name: string) => {
     try {
-        const user = await account.create('unique()', email, password, name);
+        const user = await getAccount().create('unique()', email, password, name);
         // Automatically log in after successful signup
         const session = await loginWithEmail(email, password);
         return { success: true, data: { user, session } };
@@ -53,7 +79,7 @@ export const signupWithEmail = async (email: string, password: string, name: str
 export const logout = async () => {
     try {
         // Delete all sessions instead of just the current one
-        await account.deleteSessions();
+        await getAccount().deleteSessions();
         return { success: true };
     } catch (error: unknown) {
         console.error('Logout error:', error);
@@ -65,7 +91,7 @@ export const logout = async () => {
 // Get the current user session
 export const getCurrentUser = async () => {
     try {
-        const user = await account.get();
+        const user = await getAccount().get();
         return { success: true, data: user };
     } catch (error: unknown) {
         // Don't log errors for expected authentication check failures
@@ -83,7 +109,7 @@ export const getCurrentUser = async () => {
 
 export const updatePassword = async (oldPassword: string, newPassword: string) => {
     try {
-        await account.updatePassword(newPassword, oldPassword);
+        await getAccount().updatePassword(newPassword, oldPassword);
         return { success: true };
     } catch (error: unknown) {
         console.error('Password update error:', error);
@@ -94,7 +120,7 @@ export const updatePassword = async (oldPassword: string, newPassword: string) =
 
 export const updateName = async (name: string) => {
     try {
-        const user = await account.updateName(name);
+        const user = await getAccount().updateName(name);
         return { success: true, data: user };
     } catch (error: unknown) {
         console.error('Name update error:', error);
