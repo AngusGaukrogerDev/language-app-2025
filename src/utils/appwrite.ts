@@ -107,6 +107,23 @@ export const getCurrentUser = async () => {
     }
 };
 
+// Check if user has admin label
+export const isUserAdmin = async (): Promise<boolean> => {
+    try {
+        const userResult = await getCurrentUser();
+        if (!userResult.success || !userResult.data) {
+            return false;
+        }
+        
+        // Check if user has admin label
+        const user = userResult.data;
+        return user.labels?.includes('admin') || false;
+    } catch (error: unknown) {
+        console.error('Error checking admin status:', error);
+        return false;
+    }
+};
+
 export const updatePassword = async (oldPassword: string, newPassword: string) => {
     try {
         await getAccount().updatePassword(newPassword, oldPassword);
@@ -197,6 +214,71 @@ export const getLesson = async (lessonId: string) => {
     } catch (error: unknown) {
         console.error('Get lesson error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Failed to fetch lesson';
+        return { success: false, error: { message: errorMessage } };
+    }
+};
+
+// Admin functions for course creation
+export const createCourse = async (courseData: {
+    title: string;
+    description: string;
+    level: string;
+    isActive: boolean;
+}) => {
+    try {
+        const result = await getDatabases().createDocument(
+            DATABASE_ID,
+            COURSES_COLLECTION_ID,
+            'unique()',
+            {
+                ...courseData,
+                isActive: true,
+                createdAt: new Date().toISOString(),
+            }
+        );
+        return { success: true, data: result as Models.Document };
+    } catch (error: unknown) {
+        console.error('Create course error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to create course';
+        return { success: false, error: { message: errorMessage } };
+    }
+};
+
+export const updateCourse = async (courseId: string, courseData: Partial<{
+    title: string;
+    description: string;
+    level: string;
+    difficulty: number;
+    estimatedDuration: number;
+    imageUrl: string;
+    isActive: boolean;
+}>) => {
+    try {
+        const result = await getDatabases().updateDocument(
+            DATABASE_ID,
+            COURSES_COLLECTION_ID,
+            courseId,
+            {
+                ...courseData,
+                updatedAt: new Date().toISOString(),
+            }
+        );
+        return { success: true, data: result as Models.Document };
+    } catch (error: unknown) {
+        console.error('Update course error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to update course';
+        return { success: false, error: { message: errorMessage } };
+    }
+};
+
+export const deleteCourse = async (courseId: string) => {
+    try {
+        // Soft delete by setting isActive to false
+        const result = await updateCourse(courseId, { isActive: false });
+        return result;
+    } catch (error: unknown) {
+        console.error('Delete course error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to delete course';
         return { success: false, error: { message: errorMessage } };
     }
 };
